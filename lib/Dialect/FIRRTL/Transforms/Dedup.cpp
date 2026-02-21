@@ -1165,8 +1165,10 @@ private:
     auto *fromNode = instanceGraph[cast<igraph::ModuleOpInterface>(fromModule)];
     SmallVector<FlatSymbolRefAttr> nlas;
     for (auto *instanceRecord : fromNode->uses()) {
-      auto parent = cast<FModuleOp>(*instanceRecord->getParent()->getModule());
       auto inst = instanceRecord->getInstance();
+      if (!inst)
+        continue;
+      auto parent = cast<FModuleOp>(*instanceRecord->getParent()->getModule());
       namepath[0] = OpAnnoTarget(inst).getNLAReference(getNamespace(parent));
       auto arrayAttr = ArrayAttr::get(context, namepath);
       // Check the NLA cache to see if we already have this NLA.
